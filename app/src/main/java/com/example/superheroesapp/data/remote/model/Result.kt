@@ -11,4 +11,6 @@ data class Result(
     val name: String,
     @SerializedName("thumbnail")
     val thumbnail: Thumbnail,
+    @SerializedName("comics")
+    val comics:List<ComicList>
 )

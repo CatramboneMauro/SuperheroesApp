@@ -19,3 +19,5 @@ data class CharacterEntity(
     @ColumnInfo("favourite")
     val favourite: Boolean = false,
 )
+
+

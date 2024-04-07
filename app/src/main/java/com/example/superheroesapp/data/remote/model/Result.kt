@@ -1,5 +1,6 @@
 package com.example.superheroesapp.data.remote.model
 
+import com.example.superheroesapp.data.local.entity.CharacterEntity
 import com.google.gson.annotations.SerializedName
 
 data class Result(
@@ -12,5 +13,14 @@ data class Result(
     @SerializedName("thumbnail")
     val thumbnail: Thumbnail,
     @SerializedName("comics")
-    val comics:List<ComicList>
+    val comics: List<ComicList>,
 )
+
+fun Result.toEntity(): CharacterEntity {
+    return CharacterEntity(
+        id = id,
+        description = description,
+        name = name,
+        cover = "${thumbnail.path}.${thumbnail.extension}",
+    )
+}

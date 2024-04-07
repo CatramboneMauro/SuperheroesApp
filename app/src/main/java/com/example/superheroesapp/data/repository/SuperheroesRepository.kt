@@ -19,4 +19,6 @@ interface SuperheroesRepository {
     ): Flow<CharacterNetworkResponse>
 
     suspend fun getFavouriteCharacters(): Flow<List<CharacterEntity>>
+
+    suspend fun modifyFavouriteCharacter(characterId: Int)
 }

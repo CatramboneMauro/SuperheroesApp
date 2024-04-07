@@ -1,4 +1,7 @@
 package com.example.superheroesapp.ui.screens.favourite
 
-class FavouriteViewmodel: ViewModel {
+import androidx.lifecycle.ViewModel
+import javax.inject.Inject
+
+class FavouriteViewmodel @Inject constructor(): ViewModel() {
 }

@@ -9,5 +9,4 @@ fun HomeScreen(
     viewmodel: HomeViewmodel = hiltViewModel(),
     onClick: (Hero) -> Unit
 ){
-
 }

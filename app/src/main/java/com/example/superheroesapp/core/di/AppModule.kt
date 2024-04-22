@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -49,10 +50,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMarvelApi(client: OkHttpClient, gson: Gson): Retrofit =
+    fun provideMarvelApi(client: OkHttpClient, gson: Gson): MarvelApiService =
         Retrofit.Builder()
             .baseUrl(MarvelApiService.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(client)
             .build()
+            .create()
 }

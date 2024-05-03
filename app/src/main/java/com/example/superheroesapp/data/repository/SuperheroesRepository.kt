@@ -1,24 +1,22 @@
 package com.example.superheroesapp.data.repository
 
-import com.example.superheroesapp.data.local.entity.CharacterEntity
-import com.example.superheroesapp.data.remote.model.CharacterNetworkResponse
+import android.content.Context
+import com.example.superheroesapp.domain.model.Hero
 import kotlinx.coroutines.flow.Flow
 
 interface SuperheroesRepository {
     suspend fun getCharacters(
-        apikey: String,
         timestamp: Int,
-        hash: String,
-    ): Flow<CharacterNetworkResponse>
+        context: Context,
+    ): Flow<List<Hero>>
 
-    suspend fun getCharacterById(
-        characterId: Int,
-        apikey: String,
+    suspend fun getCharactersByName(
+        name: String,
+        context: Context,
         timestamp: Int,
-        hash: String,
-    ): Flow<CharacterNetworkResponse>
+    ): Flow<List<Hero>>
 
-    suspend fun getFavouriteCharacters(): Flow<List<CharacterEntity>>
+    suspend fun getFavouriteCharacters(): Flow<List<Hero>>
 
     suspend fun modifyFavouriteCharacter(characterId: Int)
 }

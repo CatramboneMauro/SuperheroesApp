@@ -10,14 +10,21 @@ import kotlinx.coroutines.flow.Flow
 interface SuperheroesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCharacters(characters: List<CharacterEntity>)
+    suspend fun insertAll(characters: List<CharacterEntity>)
 
     @Update
-    suspend fun modifyLikedCharacter(character: CharacterEntity)
+    suspend fun modifyLiked(character: CharacterEntity)
 
     @Query("SELECT * FROM Character")
-    suspend fun loadAllCharacters(): Flow<List<CharacterEntity>>
+    suspend fun loadAll(): List<CharacterEntity>
 
-    @Query("SELECT * FROM Character WHERE favourite = true")
-    suspend fun loadLikedCharacters(): Flow<List<CharacterEntity>>
+    @Query(
+        """
+        SELECT * FROM Character WHERE name LIKE :name
+    """,
+    )
+    suspend fun loadCharacter(name: String): CharacterEntity
+
+    @Query("SELECT * FROM Character WHERE isFavourite = true")
+    suspend fun loadLiked(): Flow<List<CharacterEntity>>
 }

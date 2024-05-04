@@ -15,22 +15,7 @@ data class Result(
     val thumbnail: Thumbnail,
     @SerializedName("comics")
     val comics: ComicApiModel,
+    val isFavourite: Boolean = false
 )
 
-fun Result.toEntity(): CharacterEntity {
-    return CharacterEntity(
-        id = id,
-        description = description,
-        name = name,
-        cover = "${thumbnail.path}.${thumbnail.extension}",
-    )
-}
 
-fun Result.toDomain(): Hero{
-    return Hero(
-        id = id,
-        description = description,
-        name = name,
-        thumbnail = thumbnail.path + thumbnail.extension
-    )
-}

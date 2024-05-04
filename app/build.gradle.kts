@@ -65,6 +65,9 @@ dependencies {
     val coroutines_version = "1.7.3"
     val nav_version = "2.7.5"
 
+    //Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version")
+
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
     implementation("com.squareup.retrofit2:converter-gson:$retrofit_version")

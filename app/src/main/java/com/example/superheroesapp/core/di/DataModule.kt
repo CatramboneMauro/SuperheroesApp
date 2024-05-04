@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.example.superheroesapp.data.local.SuperHeroesDatabase
 import com.example.superheroesapp.data.remote.service.MarvelApiService
+import com.example.superheroesapp.data.repository.SuperheroesRepositoryImpl
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -57,4 +58,12 @@ object DataModule {
             .client(client)
             .build()
             .create()
+}
+
+@Provides
+@Singleton
+fun provideSuperHeroesRepository(
+    api: MarvelApiService,
+    db: SuperHeroesDatabase): SuperheroesRepositoryImpl {
+    return SuperheroesRepositoryImpl(api, db.dao)
 }

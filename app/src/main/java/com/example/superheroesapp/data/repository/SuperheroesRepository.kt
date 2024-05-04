@@ -1,6 +1,7 @@
 package com.example.superheroesapp.data.repository
 
 import android.content.Context
+import com.example.superheroesapp.data.local.entity.CharacterEntity
 import com.example.superheroesapp.domain.model.Hero
 import kotlinx.coroutines.flow.Flow
 
@@ -18,5 +19,5 @@ interface SuperheroesRepository {
 
     suspend fun getFavouriteCharacters(): Flow<List<Hero>>
 
-    suspend fun modifyFavouriteCharacter(characterId: Int)
+    suspend fun modifyFavouriteCharacter(hero: CharacterEntity)
 }

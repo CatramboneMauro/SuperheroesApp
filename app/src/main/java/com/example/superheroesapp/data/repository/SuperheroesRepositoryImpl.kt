@@ -5,19 +5,23 @@ import android.util.Log
 import com.example.superheroesapp.BuildConfig
 import com.example.superheroesapp.core.util.isOnline
 import com.example.superheroesapp.core.util.md5
-import com.example.superheroesapp.data.local.SuperHeroesDatabase
-import com.example.superheroesapp.data.local.entity.toDomain
-import com.example.superheroesapp.data.remote.model.toDomain
+import com.example.superheroesapp.data.local.SuperheroesDao
+import com.example.superheroesapp.data.local.entity.CharacterEntity
+import com.example.superheroesapp.data.mapper.toDomain
+import com.example.superheroesapp.data.mapper.toEntity
 import com.example.superheroesapp.data.remote.service.MarvelApiService
 import com.example.superheroesapp.domain.model.Hero
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.timeout
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 class SuperheroesRepositoryImpl @Inject constructor(
     private val service: MarvelApiService,
-    private val database: SuperHeroesDatabase,
+    private val dao: SuperheroesDao,
 ) : SuperheroesRepository {
     override suspend fun getCharacters(
         timestamp: Int,
@@ -25,7 +29,7 @@ class SuperheroesRepositoryImpl @Inject constructor(
     ): Flow<List<Hero>> {
         try{
             return flow {
-                val dbResult = database.superheroesDao().loadAll()
+                val dbResult = dao.loadAll()
                 if (dbResult.isNotEmpty()) {
                     emit(
                         dbResult.map {
@@ -36,20 +40,16 @@ class SuperheroesRepositoryImpl @Inject constructor(
 
                 if (isOnline(context)) {
                     val hash = "$timestamp${BuildConfig.MARVEL_PRIVATE_API_KEY}${BuildConfig.MARVEL_API_KEY}"
-                    val networkResult = service.getCharacters(BuildConfig.MARVEL_API_KEY, timestamp, hash.md5()).map { it.data.results. }
-                    networkResult.collect{
-                        emit(it.data.results.map {
-                            it.toDomain()
-                        }
+                    var networkResult = service.getCharacters(BuildConfig.MARVEL_API_KEY, timestamp, hash.md5())
+                    dao.insertAll(networkResult.data.results.map { it.toDomain().toEntity() })
+                    emit(networkResult.data.results.map { it.toDomain() })
 
-                        )
-                    }
                 }else{
-                    TODO() // Agregar UiEvent sin internet
+                    TODO() // Agregar UiEvent que informe del error al cargar de internet
                 }
 
 
-            }
+            }.timeout(3000.milliseconds)
         }catch(e:Exception){
             Log.e("Repository",e.message.toString())
 
@@ -57,19 +57,45 @@ class SuperheroesRepositoryImpl @Inject constructor(
 
     }
 
+    @OptIn(FlowPreview::class)
     override suspend fun getCharactersByName(
         name: String,
         context: Context,
         timestamp: Int,
     ): Flow<List<Hero>> {
-        TODO("Not yet implemented")
+        try{
+            return flow{
+                var dbResult = dao.getCharacter(name)
+                if (dbResult.isNotEmpty()) {
+                    emit(
+                        dbResult.map {
+                            it.toDomain()
+                        },
+                    )
+
+                }
+
+                if(isOnline(context)){
+                    val hash = "$timestamp${BuildConfig.MARVEL_PRIVATE_API_KEY}${BuildConfig.MARVEL_API_KEY}"
+                    var networkResult = service.getCharacter(BuildConfig.MARVEL_API_KEY, timestamp, hash.md5())
+                    dao.insertAll(networkResult.data.results.map { it.toDomain().toEntity() })
+                    emit(networkResult.data.results.map { it.toDomain() })
+                }
+            }.timeout(3000.milliseconds)
+        }catch(e:Exception){
+            Log.e("Repository",e.message.toString())
+        }
     }
 
-    override suspend fun getFavouriteCharacters(): Flow<List<<Hero>> {
-        TODO("Not yet implemented")
+    override suspend fun getFavouriteCharacters(): Flow<List<Hero>> {
+        return dao.getLiked().map {
+            it.map {character ->
+                character.toDomain()
+            }
+        }
     }
 
-    override suspend fun modifyFavouriteCharacter(characterId: Int) {
-        TODO("Not yet implemented")
+    override suspend fun modifyFavouriteCharacter(hero: CharacterEntity) {
+        dao.modifyLiked(hero)
     }
 }

@@ -22,12 +22,3 @@ data class CharacterEntity(
     val isFavourite: Boolean = false,
 )
 
-fun CharacterEntity.toDomain(): Hero {
-    return Hero(
-        id = id,
-        name = name,
-        description = description,
-        thumbnail = cover,
-        isFavourite = isFavourite,
-    )
-}

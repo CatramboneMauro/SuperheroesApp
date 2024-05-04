@@ -1,8 +1,7 @@
 package com.example.superheroesapp.data.remote.service
 
-import com.example.superheroesapp.data.remote.model.CharacterDto
+import com.example.superheroesapp.data.remote.model.CharacterResponse
 import kotlinx.coroutines.flow.Flow
-import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -18,18 +17,18 @@ interface MarvelApiService {
         @Query("apikey") apikey: String,
         @Query("ts")timestamp: Int,
         @Query("hash") hash: String,
-    ): Flow<CharacterDto>
+    ): CharacterResponse
 
     /**
      * Fetches a single character by id.
      */
-    @GET("/v1/public/characters{characterId}")
+    @GET("/v1/public/characters")
     suspend fun getCharacter(
-        @Path("characterId")id: Int,
+        @Query("name")name: String,
         @Query("apikey") apikey: String,
         @Query("ts")timestamp: Int,
         @Query("hash") hash: String,
-    ): Flow<CharacterDto>
+    ): CharacterResponse
 
     companion object {
         const val BASE_URL = "https://gateway.marvel.com/"
